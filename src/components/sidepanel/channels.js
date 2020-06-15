@@ -3,6 +3,7 @@ import {Menu, Icon, Modal, Form, Input, Button} from 'semantic-ui-react';
 import firebase from '../../firebase';
 import { connect } from 'react-redux';
 import { setCurrentChannel } from '../../actions';
+import '../../components/App.css';
 
 class Channels extends React.Component{
     constructor(props){
@@ -118,7 +119,7 @@ class Channels extends React.Component{
 
         return (
             <React.Fragment>
-                <Menu.Menu style={{paddingBottom: '2em'}}>
+                <Menu.Menu className="menu">
                     <Menu.Item>
                         <span>
                             <Icon name="exchange" /> CHANNELS

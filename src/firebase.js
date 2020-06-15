@@ -3,7 +3,7 @@ import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/storage';
 
-//provide firebase config here
+//firebase related conigurations 
 let firebaseConfig = {
     apiKey: ,
     authDomain: ,
