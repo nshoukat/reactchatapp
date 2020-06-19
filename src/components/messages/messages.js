@@ -16,8 +16,10 @@ class Messages extends React.Component{
             privateChannel: this.props.isPrivateChannel,
             user: this.props.currentUser,
             channel: this.props.currentChannel,
+            isChannelStarred: false,
             privateMessagesRef: firebase.database().ref('privateMessages'),
             messagesRef:  firebase.database().ref('messages'),
+            userRef: firebase.database().ref('users'),
             numUniqueUsers: '',
             searchTerm: '',
             loadingSearch: false,
@@ -29,12 +31,27 @@ class Messages extends React.Component{
     componentDidMount(){
         const {channel, user}= this.state;
         if(channel && user){
-            this.addListerners(channel.id);   
+            this.addListerners(channel.id);
+            this.addUserStarsListener(channel.id, user.uid);  
         }
     }
 
     addListerners= channelId => {
         this.addMessageListeners(channelId);
+    }
+
+    addUserStarsListener= (channelId, userId) => {
+        this.state.userRef
+            .child(userId)
+            .child('starred')
+            .once('value')
+            .then(data => {
+                if(data.val() !== null){
+                    const channelIds= Object.keys(data.val());
+                    const prevStarred= channelIds.includes(channelId);
+                    this.setState({isChannelStarred: prevStarred});
+                }
+            });
     }
 
     addMessageListeners= channelId => {
@@ -99,10 +116,42 @@ class Messages extends React.Component{
         setTimeout( () => this.setState({ loadingSearch: false }), 1000);
     }
 
+    handleStar= () => {
+        this.setState(prevState => ({
+            isChannelStarred: !prevState.isChannelStarred
+        }), () => this.starChannel());
+    };
+
+    starChannel= () =>{
+        if(this.state.isChannelStarred){
+            this.state.userRef
+                .child(`${this.state.user.uid}/starred`)
+                .update({
+                    [this.state.channel.id]: {
+                        name: this.state.channel.name,
+                        details: this.state.channel.details,
+                        createdBy: {
+                            name: this.state.channel.createdBy.name,
+                            //avatar: this.state.channel.createdBy.avatar
+                        }
+                    }
+                });
+        }else{
+            this.state.userRef
+                .child(`${this.state.user.uid}/starred`)
+                .child(this.state.channel.id)
+                .remove(err => {
+                    if(err !== null){
+                        console.log(err);
+                    }
+                });
+        }
+    };
+
     render(){
         const {messagesRef, user, messages, channel,
               numUniqueUsers, searchResults, searchTerm,
-              loadingSearch, privateChannel } = this.state;
+              loadingSearch, privateChannel, isChannelStarred } = this.state;
         return (
             <React.Fragment>
                 <MessageHeader
@@ -111,6 +160,8 @@ class Messages extends React.Component{
                     handleSearchChange= {this.handleSearchChange}
                     searchLoading= {loadingSearch}
                     isPrivateChannel= {privateChannel}
+                    handleStar= {this.handleStar}
+                    isChannelStarred= {isChannelStarred}
                  />
 
                 <Segment>
