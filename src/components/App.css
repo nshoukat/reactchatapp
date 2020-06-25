@@ -1,9 +1,9 @@
 html,
 body,
 .app {
-    height: 100%;
-    background-color: rgb(226, 221, 221);
-    padding: 1em;
+     height: 100% !important;
+     /* background-color: rgb(226, 221, 221);  */
+     padding: 1em;  
 }
 
 /* Messages.js */
@@ -45,4 +45,25 @@ body,
 
 .menu {
     padding-bottom: 2em;
+}
+
+/* ColorPanel.js */
+
+.color__container {
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    width: 35px;
+    border-radius: 3px;
+}
+
+.color__square {
+    width: 35px;
+    height: 35px;
+}
+
+.color__overlay {
+    width: 85px;
+    height: 35px;
+    transform: rotate(225deg);
 }
